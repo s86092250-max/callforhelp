@@ -29,6 +29,76 @@ if (menuButton && navigation) {
 const year = document.querySelector("#current-year");
 if (year) year.textContent = new Date().getFullYear();
 
+const heroVideo = document.querySelector(".hero-video");
+if (heroVideo) {
+  const supportClips = [
+    "customer-support-call.mp4",
+    "support-woman-1.mp4",
+    "support-man-2.mp4"
+  ];
+  let activeClip = 0;
+
+  heroVideo.addEventListener("loadeddata", () => {
+    heroVideo.classList.remove("is-switching");
+  });
+
+  window.setInterval(() => {
+    activeClip = (activeClip + 1) % supportClips.length;
+    heroVideo.classList.add("is-switching");
+    heroVideo.src = supportClips[activeClip];
+    heroVideo.load();
+    heroVideo.play().catch(() => {});
+  }, 7500);
+}
+
+const serviceCards = [...document.querySelectorAll(".service-card")];
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const aboutHeading = document.querySelector("#about .section-title h2");
+
+if (aboutHeading && !prefersReducedMotion) {
+  if ("IntersectionObserver" in window) {
+    const aboutObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("about-heading-animate");
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.25 });
+    aboutObserver.observe(aboutHeading);
+  } else {
+    aboutHeading.classList.add("about-heading-animate");
+  }
+}
+
+if (serviceCards.length && !prefersReducedMotion) {
+  serviceCards.forEach((card, index) => {
+    card.classList.add("reveal-ready");
+    card.style.setProperty("--reveal-delay", `${(index % 4) * 90}ms`);
+  });
+
+  if ("IntersectionObserver" in window) {
+    const serviceObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const card = entry.target;
+        card.classList.add("reveal-entering");
+        card.addEventListener("animationend", () => {
+          card.classList.remove("reveal-entering", "reveal-ready");
+          card.classList.add("reveal-visible");
+        }, { once: true });
+        observer.unobserve(card);
+      });
+    }, { threshold: 0.12 });
+
+    serviceCards.forEach((card) => serviceObserver.observe(card));
+  } else {
+    serviceCards.forEach((card) => {
+      card.classList.remove("reveal-ready");
+      card.classList.add("reveal-visible");
+    });
+  }
+}
+
 const inquiryForm = document.querySelector("#inquiry-form");
 const formStatus = document.querySelector("#form-status");
 
@@ -72,6 +142,14 @@ function setChatOpen(isOpen) {
   chatToggle.setAttribute("aria-label", isOpen ? "Close contact box" : "Open contact box");
   if (isOpen) chatClose?.focus();
 }
+
+document.querySelector(".main-nav .nav-cta")?.addEventListener("click", (event) => {
+  event.preventDefault();
+  navigation?.classList.remove("is-open");
+  menuButton?.setAttribute("aria-expanded", "false");
+  menuButton?.setAttribute("aria-label", "Open navigation");
+  setChatOpen(true);
+});
 
 chatToggle?.addEventListener("click", () => {
   setChatOpen(chatPopover?.hidden ?? true);
