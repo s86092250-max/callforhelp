@@ -107,7 +107,6 @@ if (inquiryForm && formStatus) {
     event.preventDefault();
 
     const formData = new FormData(inquiryForm);
-
     if (formData.get("website_check")) return;
 
     formStatus.textContent = "Sending your inquiry...";
@@ -116,36 +115,20 @@ if (inquiryForm && formStatus) {
       const response = await fetch("https://formspree.io/f/xljjwwoa", {
         method: "POST",
         body: formData,
-        headers: {
-          Accept: "application/json"
-        }
+        headers: { Accept: "application/json" }
       });
 
       if (response.ok) {
-        formStatus.textContent =
-          "Thank you! Your inquiry has been sent successfully.";
+        formStatus.textContent = "Thank you! Your inquiry has been sent successfully.";
         inquiryForm.reset();
       } else {
-        formStatus.textContent =
-          "Sorry, your inquiry could not be sent. Please try again.";
+        formStatus.textContent = "Sorry, your inquiry could not be sent. Please try again.";
       }
     } catch (error) {
-      formStatus.textContent =
-        "Connection error. Please try again.";
+      formStatus.textContent = "Connection error. Please try again.";
     }
   });
 }
-
-    const message = fields.map(([label, value]) => `${label}: ${value}`).join("\n\n");
-    const subject = encodeURIComponent(`Call for Help inquiry — ${formData.get("service")}`);
-    const body = encodeURIComponent(message);
-    const recipient = "callforhelpsupport@gmail.com"; // Replace with the confirmed business inbox before launch.
-
-    formStatus.textContent = "Your email app should open with the inquiry ready to review and send. If it does not open, use the email link shown beside this form.";
-    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
-  });
-}
-
 const chatToggle = document.querySelector("#chat-toggle");
 const chatPopover = document.querySelector("#chat-popover");
 const chatClose = document.querySelector("#chat-close");
