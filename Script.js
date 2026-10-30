@@ -103,23 +103,38 @@ const inquiryForm = document.querySelector("#inquiry-form");
 const formStatus = document.querySelector("#form-status");
 
 if (inquiryForm && formStatus) {
-  inquiryForm.addEventListener("submit", (event) => {
+  inquiryForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const formData = new FormData(inquiryForm);
+
     if (formData.get("website_check")) return;
 
-    const fields = [
-      ["Full name", formData.get("name")],
-      ["Business email", formData.get("email")],
-      ["Company", formData.get("company")],
-      ["Website", formData.get("website") || "Not provided"],
-      ["Service required", formData.get("service")],
-      ["Estimated support volume", formData.get("volume")],
-      ["Preferred contact method", formData.get("contactMethod")],
-      ["Phone", formData.get("phone") || "Not provided"],
-      ["Project details", formData.get("details")]
-    ];
+    formStatus.textContent = "Sending your inquiry...";
+
+    try {
+      const response = await fetch("https://formspree.io/f/xljjwwoa", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json"
+        }
+      });
+
+      if (response.ok) {
+        formStatus.textContent =
+          "Thank you! Your inquiry has been sent successfully.";
+        inquiryForm.reset();
+      } else {
+        formStatus.textContent =
+          "Sorry, your inquiry could not be sent. Please try again.";
+      }
+    } catch (error) {
+      formStatus.textContent =
+        "Connection error. Please try again.";
+    }
+  });
+}
 
     const message = fields.map(([label, value]) => `${label}: ${value}`).join("\n\n");
     const subject = encodeURIComponent(`Call for Help inquiry — ${formData.get("service")}`);
