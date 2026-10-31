@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://callforhelp.online/sitemap.xml
