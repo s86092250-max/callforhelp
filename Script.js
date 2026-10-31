@@ -141,12 +141,10 @@ function setChatOpen(isOpen) {
   if (isOpen) chatClose?.focus();
 }
 
-document.querySelector(".main-nav .nav-cta")?.addEventListener("click", (event) => {
-  event.preventDefault();
+document.querySelector(".main-nav .nav-cta")?.addEventListener("click", () => {
   navigation?.classList.remove("is-open");
   menuButton?.setAttribute("aria-expanded", "false");
   menuButton?.setAttribute("aria-label", "Open navigation");
-  setChatOpen(true);
 });
 
 chatToggle?.addEventListener("click", () => {
